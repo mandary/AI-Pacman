@@ -228,7 +228,6 @@ def getDepends(testParser, testRoot, question):
 
 # get list of questions to grade
 def getTestSubdirs(testParser, testRoot, questionToGrade):
-    questionToGrade = questionToGrade
     problemDict = testParser.TestParser(os.path.join(testRoot, 'CONFIG')).parse()
     if questionToGrade != None:
         questions = getDepends(testParser, testRoot, questionToGrade)
