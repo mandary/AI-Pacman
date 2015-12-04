@@ -78,10 +78,59 @@ def enhancedFeatureExtractorDigit(datum):
     features =  basicFeatureExtractorDigit(datum)
 
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    pixels = datum.getPixels()
+    breaks = 0
+    nonzero = 0
+    left = None
+    center = 0
+    for i in range(len(pixels)):
+        row = pixels[i]
+        active = False
+        for j in range(len(row)):
+            if row[j] is not 0:
+                nonzero += 1
+                if not left or j < left:
+                    left = j
+                if j <= (len(pixels) + 1) / 2:
+                    center += 1
+            if row[j] is not row[j - 1]:
+                breaks += 1
+    width = len(pixels[0]) - (left * 2)
+    top = None
+    pastRight = 0
+    for j in range(len(pixels[0])):
+        active = False
+        col = [p[j] for p in pixels]
+        for i in range(len(col)):
+            if col[j] != 0:
+                nonzero += 1
+                if not top or i < top:
+                    top = i           
+                if i <= (len(pixels[0]) + 1) / 2:
+                    pastRight += 1
+            if col[i] != row[i - 1]:
+                breaks += 1
+
+    height = len(pixels) - (top * 2)
+    aspectRatio = float(width) / height
+    for n in range(5):
+        features[n] = breaks > 175 and 1.0 or 0.0
+        
+    for n in range(10):
+        features[(n + 1) * 10] = aspectRatio < 0.69
+        
+    for n in range(5):
+        features[-n] = nonzero > 300 and 1.0 or 0.0
+        
+    percentAbove = float(center) / nonzero
+    for n in range(5):
+        features[-(n + 1) * 10] = percentAbove > 0.35 and 1.0 or 0.0
+        
+    percentRight = float(pastRight) / nonzero
+    for n in range(1000, 1005):
+        features[n] = percentRight < 0.27 and 1.0 or 0.0
 
     return features
-
 
 
 def basicFeatureExtractorPacman(state):
@@ -124,7 +173,21 @@ def enhancedPacmanFeatures(state, action):
     """
     features = util.Counter()
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    next = state.generateSuccessor(0, action)
+    ghosts = next.getGhostPositions()
+    pacman = next.getPacmanPosition()
+    foods = next.getFood()
+    foodPositions = []
+    for i in xrange(foods.width):
+        for j in xrange(foods.height):
+            if foods[i][j] is True:
+                foodPositions.append((i, j))
+    ghostDist = [util.manhattanDistance(g, pacman) for g in ghosts]
+    foodDist = [util.manhattanDistance(g, pacman) for g in foodPositions]
+    features['ghost'] = pow(1 + min(ghostDist), -1)
+    for i in xrange(len(foodPositions)):
+        features['food' + str(i)] = pow(1 + foodDist[i], -1)
+
     return features
 
 
