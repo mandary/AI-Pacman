@@ -112,23 +112,23 @@ def enhancedFeatureExtractorDigit(datum):
                 breaks += 1
 
     height = len(pixels) - (top * 2)
-    aspectRatio = float(width) / height
+    ratio = float(width) / height
     for n in range(5):
-        features[n] = breaks > 175 and 1.0 or 0.0
-        
-    for n in range(10):
-        features[(n + 1) * 10] = aspectRatio < 0.69
-        
-    for n in range(5):
-        features[-n] = nonzero > 300 and 1.0 or 0.0
-        
-    percentAbove = float(center) / nonzero
-    for n in range(5):
-        features[-(n + 1) * 10] = percentAbove > 0.35 and 1.0 or 0.0
-        
+        features[i] = breaks > 175 and 1.0 or 0.0
+
+    for i in range(10):
+        features[(i + 1) * 10] = ratio < 0.69
+
+    for i in range(5):
+        features[-i] = nonzero > 300 and 1.0 or 0.0
+
+    above = float(center) / nonzero
+    for i in range(10):
+        features[-(i + 1) * 10] = above > 0.35 and 1.0 or 0.0
+
     percentRight = float(pastRight) / nonzero
-    for n in range(1000, 1005):
-        features[n] = percentRight < 0.27 and 1.0 or 0.0
+    for i in range(1000, 1005):
+        features[i] = percentRight < 0.27 and 1.0 or 0.0
 
     return features
 
